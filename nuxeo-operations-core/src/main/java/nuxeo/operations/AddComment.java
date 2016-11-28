@@ -7,6 +7,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.runtime.api.Framework;
@@ -26,9 +27,22 @@ public class AddComment {
     protected String comment;
 
     @OperationMethod
-    public void run(DocumentModel doc) {
+    public DocumentModel run(DocumentModel doc) {
     	CommentManager commentManager = Framework.getService(CommentManager.class);
     	NuxeoPrincipal user = (NuxeoPrincipal) session.getPrincipal();
     	commentManager.createComment(doc, comment, user.getName());
+    	return doc;
+    }
+    
+    @OperationMethod
+    public DocumentModelList run(DocumentModelList docs) {
+    	CommentManager commentManager = Framework.getService(CommentManager.class);
+    	NuxeoPrincipal user = (NuxeoPrincipal) session.getPrincipal();
+    	
+    	for (DocumentModel doc : docs) {
+        	commentManager.createComment(doc, comment, user.getName());
+        }
+    	
+    	return docs;
     }
 }
